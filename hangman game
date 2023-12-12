@@ -1,0 +1,142 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// Function to display the hangman based on the number of incorrect guesses
+void displayHangman(int incorrectGuesses) {
+    printf("\n");
+
+    switch (incorrectGuesses) {
+        case 0:
+            printf("  +---+\n");
+            printf("      |\n");
+            printf("      |\n");
+            printf("      |\n");
+            break;
+        case 1:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf("      |\n");
+            printf("      |\n");
+            break;
+        case 2:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf("  |   |\n");
+            printf("      |\n");
+            break;
+        case 3:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf(" /|   |\n");
+            printf("      |\n");
+            break;
+        case 4:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf(" /|\\  |\n");
+            printf("      |\n");
+            break;
+        case 5:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf(" /|\\  |\n");
+            printf(" /    |\n");
+            break;
+        case 6:
+            printf("  +---+\n");
+            printf("  O   |\n");
+            printf(" /|\\  |\n");
+            printf(" / \\  |\n");
+            break;
+    }
+}
+
+int main() {
+    // Array of words for the game
+    char words[][20] = {"programming","hangman", "computer", "keyboard", "language", "developer", "challenge"};
+
+    // Randomly select a word
+    srand(time(NULL));
+    int wordIndex = rand() % (sizeof(words) / sizeof(words[0]));
+    char chosenWord[20];
+    strcpy(chosenWord, words[wordIndex]);
+
+    // Initialize variables
+    int wordLength = strlen(chosenWord);
+    char guessedWord[wordLength];
+    for (int i = 0; i < wordLength; i++) {
+        guessedWord[i] = '_';
+    }
+    guessedWord[wordLength] = '\0';
+
+    int incorrectGuesses = 0;
+    char guessedCharacters[26];
+    int guessedCount = 0;
+
+    // Main game loop
+    while (incorrectGuesses < 6) {
+        // Display current state of the word and hangman
+        printf("\nWord: %s\n", guessedWord);
+        displayHangman(incorrectGuesses);
+
+        // Display guessed characters
+        printf("\nGuessed Characters: ");
+        for (int i = 0; i < guessedCount; i++) {
+            printf("%c ", guessedCharacters[i]);
+        }
+
+        // Get user input
+        char guess;
+        printf("\nEnter a character: ");
+        scanf(" %c", &guess);
+
+        // Check if the character has already been guessed
+        int alreadyGuessed = 0;
+        for (int i = 0; i < guessedCount; i++) {
+            if (guessedCharacters[i] == guess) {
+                alreadyGuessed = 1;
+                break;
+            }
+        }
+
+        if (alreadyGuessed) {
+            printf("You've already guessed that character. Try again.\n");
+            continue;
+        }
+
+        // Add the guessed character to the list
+        guessedCharacters[guessedCount++] = guess;
+
+        // Check if the guessed character is in the word
+        int found = 0;
+        for (int i = 0; i < wordLength; i++) {
+            if (chosenWord[i] == guess) {
+                guessedWord[i] = guess;
+                found = 1;
+            }
+        }
+
+        // Increment incorrect guesses if the character is not in the word
+        if (!found) {
+            incorrectGuesses++;
+        }
+
+        // Check if the word has been guessed
+        if (strcmp(guessedWord, chosenWord) == 0) {
+            printf("\nCongratulations! You guessed the word: %s\n", chosenWord);
+            break;
+        }
+    }
+
+    // Display final result
+    if (incorrectGuesses == 6) {
+        printf("\nSorry, you ran out of chances. The correct word was: %s\n", chosenWord);
+        displayHangman(6); // Display full hangman
+    }
+
+    return 0;
+}
+
